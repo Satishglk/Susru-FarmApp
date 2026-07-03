@@ -82,7 +82,11 @@ class VoiceCommandService {
     if (!_available) return;
     final localeId = VoiceCommandLocales.speechLocaleId[uiLocaleCode] ?? 'en_IN';
     await _speech.listen(
-      listenOptions: stt.SpeechListenOptions(localeId: localeId),
+      // Forces on-device recognition so voice commands work with no network,
+      // matching the app's offline requirement. Without this, both Android
+      // and iOS may silently fall back to server-based recognition whenever
+      // a network is reachable.
+      listenOptions: stt.SpeechListenOptions(localeId: localeId, onDevice: true),
       onResult: (result) {
         onResult(result.recognizedWords, result.finalResult);
       },
